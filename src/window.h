@@ -6,4 +6,6 @@
 
 void print(struct game_data *data);
 
+void print_debug(struct game_data *data);
+
 #endif

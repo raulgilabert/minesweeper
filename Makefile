@@ -1,5 +1,5 @@
-all: main.o explosion.o game.o window.o
-	gcc -gstabs+ -o minesweeper main.o explosion.o game.o window.o
+all: main.o explosion.o game.o window.o data.o
+	gcc -gstabs+ -o minesweeper main.o explosion.o game.o window.o data.o
 	rm *.o
 
 main.o: src/main.c
@@ -13,6 +13,9 @@ game.o: src/game.c
 
 window.o: src/window.c
 	gcc -c src/window.c
+
+data.o: src/data.c
+	gcc -c src/data.c
 
 clean:
 	rm minesweeper

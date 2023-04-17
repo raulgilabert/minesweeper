@@ -16,8 +16,18 @@ struct q_data {
 };
 
 struct queue {
-	struct q_data *first;
+	struct q_data *first, *last;
 	u_int16_t elements;
 };
+
+struct queue create_queue();
+
+void add_element_queue(struct queue *q, u_int8_t x, u_int8_t y);
+
+void delete_element(struct queue *q);
+
+struct q_data* read_element(struct queue *q);
+
+u_int8_t q_empty(struct queue *q);
 
 #endif

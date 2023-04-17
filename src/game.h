@@ -9,6 +9,8 @@ struct game_data create_board(int rows, int columns);
 
 void add_mine(struct game_data *data);
 
-void click(int x, int y, struct game_data *data);
+int click(int x, int y, struct game_data *data);
+
+void flag(int x, int y, struct game_data *data);
 
 #endif

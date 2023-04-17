@@ -1,4 +1,5 @@
 #include "game.h"
+#include "data.h"
 #include <sys/types.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -38,6 +39,11 @@ add_mine(struct game_data *data)
 	int pos_y = rand()%(*data).rows;
 	int pos_x = rand()%(*data).columns;
 
+	if (data->intern_board[pos_y*data->columns + pos_x] & 0b10000000) {
+		add_mine(data);
+		return;
+	}
+
 	data->intern_board[pos_y*data->columns + pos_x] = 0b10000000;
 		
 	/* relleno de casillas contiguas a la mina */
@@ -58,22 +64,82 @@ add_mine(struct game_data *data)
 	}
 }
 
-void
+int
 click(int x, int y, struct game_data *data)
 {
 	if (x < 0 || x >= data->columns || y < 0 || y >= data->rows) {
 		printf("posición no válida\n");
-		return;
+		return 1;
 	}
 
 	if (data->intern_board[y*data->columns + x] & 0b00100000) {
 		printf("posición limpia\n");
+		return 1;
+	}
+
+	if (data->intern_board[y*data->columns + x] & 0b10000000) {
+		data->intern_board[y*data->columns + x] |= 0b00100000;
+		return 2;
+	}
+
+	struct queue next_cells = create_queue();
+
+	add_element_queue(&next_cells, x, y);
+
+	while (!q_empty(&next_cells)) {
+		struct q_data *cell = read_element(&next_cells);
+
+		if (data->intern_board[cell->y*data->columns + cell->x] == 0b00000000) {
+			if (cell->x + 1 >= 0 && cell->x + 1 < data->columns)
+				add_element_queue(&next_cells, cell->x+1, cell->y);
+
+			if (cell->x - 1 >= 0 && cell->x - 1 < data->columns)
+				add_element_queue(&next_cells, cell->x-1, cell->y);
+
+			if (cell->y + 1 >= 0 && cell->y + 1 < data->rows)
+				add_element_queue(&next_cells, cell->x, cell->y+1);
+
+			if (cell->y - 1 >= 0 && cell->y - 1 < data->rows)
+				add_element_queue(&next_cells, cell->x, cell->y-1);
+
+			if (cell->x + 1 >= 0 && cell->x + 1 < data->columns &&
+			    cell->y + 1 >= 0 && cell->y + 1 < data->rows)
+				add_element_queue(&next_cells, cell->x+1, cell->y+1);
+
+			if (cell->x + 1 >= 0 && cell->x + 1 < data->columns &&
+			    cell->y - 1 >= 0 && cell->y - 1 < data->rows)
+				add_element_queue(&next_cells, cell->x+1, cell->y-1);
+
+
+			if (cell->x - 1 >= 0 && cell->x - 1 < data->columns &&
+			    cell->y + 1 >= 0 && cell->y + 1 < data->rows)
+				add_element_queue(&next_cells, cell->x-1, cell->y+1);
+
+
+			if (cell->x - 1 >= 0 && cell->x - 1 < data->columns &&
+			    cell->y - 1 >= 0 && cell->y - 1 < data->rows)
+				add_element_queue(&next_cells, cell->x-1, cell->y-1);
+
+
+		}
+
+		data->intern_board[cell->y*data->columns + cell->x] |= 0b00100000;
+
+		delete_element(&next_cells);
+	
+	}
+
+	return 0;
+}
+
+
+void
+flag(int x, int y, struct game_data *data)
+{
+	if (data->intern_board[y*data->columns + x] & 0b00100000) {
+		printf("casilla ya despejada, no se puede colocar bandera\n");
 		return;
 	}
 
-	data->intern_board[y*data->columns + x] |= 0b00100000;
-
-	struct queue next_cells;
-
-
+	data->intern_board[y*data->columns + x] |= 0b01000000;
 }

@@ -23,16 +23,40 @@ main(int argc, char *argv[])
 	printf("rows: %d, columns: %d\n", rows, columns);
 
 	while (1) {
+		//print_debug(&data);
 		print(&data);
 
-		char command[2], first_cell[3], second_cell[3];
+		printf("> ");
 
+		char command[20];
 		scanf("%1s", command);
-		scanf("%2s", first_cell);
-		scanf("%2s", second_cell);
-
+		
 		if (command[0] == 'c') {
-			click(atoi(first_cell), atoi(second_cell), &data);
-		}
+			/* click */
+			char first_cell[3], second_cell[3];
+
+			scanf("%2s", first_cell);
+			scanf("%2s", second_cell);
+
+			int action = click(atoi(first_cell), atoi(second_cell), &data);
+
+			if (action == 2) {
+				print(&data);
+				print_explosion();
+				exit(0);
+			}
+
+		} else if (command[0] == 'f') {
+			/* flag */
+			char first_cell[3], second_cell[3];
+
+			scanf("%2s", first_cell);
+			scanf("%2s", second_cell);
+
+			flag(atoi(first_cell), atoi(second_cell), &data);
+		} else if (command[0] == 'e') {
+			/* exit */
+			exit(0);
+		} 
 	}
 }
