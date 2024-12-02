@@ -1,91 +1,43 @@
 #include "window.h"
 #include "data.h"
 #include <stdio.h>
+#include <ncurses.h>
 
-void
-print(struct game_data *data)
+
+void print(struct game_data *data, WINDOW *win)
 {
-	printf(" 0");
-	for (int i = 0; i < data->columns - 2; ++i) {
-		printf(" ");
-	}
-	printf("%d\n", data->columns);
-
-	printf("+");
-	for (int i = 0; i < data->columns; ++i) {
-		printf("-");
-	}
-	printf("+\n");
+	//in row 0 print rows x columns and number of mines
+	mvwprintw(win, 0, 0, "rows: %d, columns: %d, mines: %d", data->rows, data->columns, (data->rows*data->columns)*15/100 + 1);
 
 	for (int i = 0; i < data->rows; ++i) {
-		printf("|");
 		for (int j = 0; j < data->columns; ++j) {
-			u_int8_t num = data->intern_board[i*data->columns + j];
+			if (data->intern_board[i*data->columns + j] & 0b00100000) {
+				if (data->intern_board[i*data->columns + j] & 0b10000000) {
+					mvwaddch(win, i+2, j, 'X');
+				} else {
+					char num = (data->intern_board[i*data->columns + j] & 0b00001111) + '0';
 
-			char char_to_print = ' ';
-
-
-			if (num & 0b01000000) {
-				char_to_print = 'F';
-			} else if (!(num & 0b00100000)) {
-				char_to_print = '#';
-			} else if (num & 0b10000000) {
-				char_to_print = 'B';
-			} else if ((num & 0b00001111) == 0) {
-
+					if (num == '0') {
+						wattron(win, COLOR_PAIR(2));
+						mvwaddch(win, i+2, j, ' ');
+						wattroff(win, COLOR_PAIR(2));
+					} else {
+						wattron(win, COLOR_PAIR(4));
+						mvwaddch(win, i+2, j, num);
+						wattroff(win, COLOR_PAIR(4));
+					}
+				}
 			} else {
-				char_to_print = '0' + (num & 0b00001111);
+				if (data->intern_board[i*data->columns + j] & 0b01000000) {
+					wattron(win, COLOR_PAIR(3));
+					mvwaddch(win, i+2, j, '?');
+					wattroff(win, COLOR_PAIR(3));
+				} else { 
+					wattron(win, COLOR_PAIR(1));
+					mvwaddch(win, i+2, j, '#');
+					wattroff(win, COLOR_PAIR(1));
+				}
 			}
-
-			printf("%c", char_to_print);
 		}
-		printf("|%d\n", i);
 	}
-
-	printf("+");
-	for (int i = 0; i < data->columns; ++i) {
-		printf("-");
-	}
-	printf("+\n");
-
-
-}
-
-void
-print_debug(struct game_data *data)
-{
-	printf("+");
-	for (int i = 0; i < data->columns; ++i) {
-		printf("-");
-	}
-	printf("+\n");
-
-	for (int i = 0; i < data->rows; ++i) {
-		printf("|");
-		for (int j = 0; j < data->columns; ++j) {
-			u_int8_t num = data->intern_board[i*data->columns + j];
-
-			char char_to_print = ' ';
-
-
-			if (num & 0b10000000) {
-				char_to_print = 'B';
-			} else if ((num & 0b00001111) == 0) {
-
-			} else {
-				char_to_print = '0' + (num & 0b00001111);
-			}
-
-			printf("%c", char_to_print);
-		}
-		printf("|\n");
-	}
-
-	printf("+");
-	for (int i = 0; i < data->columns; ++i) {
-		printf("-");
-	}
-	printf("+\n");
-
-
 }

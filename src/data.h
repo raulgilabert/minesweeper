@@ -30,4 +30,14 @@ struct q_data* read_element(struct queue *q);
 
 u_int8_t q_empty(struct queue *q);
 
+enum action {
+	CLICK,
+	FLAG,
+	MV_UP,
+	MV_DOWN,
+	MV_LEFT,
+	MV_RIGHT,
+	NONE
+};
+
 #endif

@@ -4,11 +4,13 @@
 #include <unistd.h>
 #include <string.h>
 #include <time.h>
+#include <ncurses.h>
 
 #include "explosion.h"
 #include "game.h"
 #include "window.h"
 #include "data.h"
+#include "action.h"
 
 int
 main(int argc, char *argv[])
@@ -16,47 +18,51 @@ main(int argc, char *argv[])
 	//print_explosion();
 	srand(time(NULL));
 
-	int rows = 10, columns = 20;
+	int rows = 12, columns = 35;
 
 	struct game_data data = create_board(rows, columns);
 
-	printf("rows: %d, columns: %d\n", rows, columns);
+	initscr();
+	cbreak();
+	noecho();
 
-	while (1) {
-		//print_debug(&data);
-		print(&data);
+	if (!has_colors()) {
+        endwin();
+        printf("El terminal no soporta colores.\n");
+        return 1;
+    }
 
-		printf("> ");
+	start_color();
 
-		char command[20];
-		scanf("%1s", command);
-		
-		if (command[0] == 'c') {
-			/* click */
-			char first_cell[3], second_cell[3];
+	// 1: game board no clicked
+	init_pair(1, COLOR_BLACK, COLOR_WHITE);
+	// 2: game board clicked and clear
+	init_pair(2, COLOR_WHITE, COLOR_BLACK);
+	// 3: game board clicked and flag
+	init_pair(3, COLOR_WHITE, COLOR_GREEN);
+	// 4: game board clicked and number
+	init_pair(4, COLOR_WHITE, COLOR_BLUE);
 
-			scanf("%2s", first_cell);
-			scanf("%2s", second_cell);
 
-			int action = click(atoi(first_cell), atoi(second_cell), &data);
+	int x, y;
+	getmaxyx(stdscr, y, x);
 
-			if (action == 2) {
-				print(&data);
-				print_explosion();
-				exit(0);
-			}
+	int start_x = (x - columns)/2;
+	int start_y = (y - rows)/2;
 
-		} else if (command[0] == 'f') {
-			/* flag */
-			char first_cell[3], second_cell[3];
+	WINDOW *win = newwin(rows+2, columns, start_y, start_x);
 
-			scanf("%2s", first_cell);
-			scanf("%2s", second_cell);
+	wrefresh(win);
 
-			flag(atoi(first_cell), atoi(second_cell), &data);
-		} else if (command[0] == 'e') {
-			/* exit */
-			exit(0);
-		} 
+	getyx(win, y, x);
+
+	while (1)
+	{
+		print(&data, win);
+		wmove(win, y+2, x);
+
+		wrefresh(win);
+
+		do_action(read_keyboard(), &x, &y, &data);
 	}
 }

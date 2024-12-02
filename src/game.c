@@ -68,12 +68,12 @@ int
 click(int x, int y, struct game_data *data)
 {
 	if (x < 0 || x >= data->columns || y < 0 || y >= data->rows) {
-		printf("posición no válida\n");
+		//printf("posición no válida\n");
 		return 1;
 	}
 
 	if (data->intern_board[y*data->columns + x] & 0b00100000) {
-		printf("posición limpia\n");
+		//printf("posición limpia\n");
 		return 1;
 	}
 
@@ -137,7 +137,7 @@ void
 flag(int x, int y, struct game_data *data)
 {
 	if (data->intern_board[y*data->columns + x] & 0b00100000) {
-		printf("casilla ya despejada, no se puede colocar bandera\n");
+		//printf("casilla ya despejada, no se puede colocar bandera\n");
 		return;
 	}
 
