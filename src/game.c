@@ -72,7 +72,8 @@ click(int x, int y, struct game_data *data)
 		return 1;
 	}
 
-	if (data->intern_board[y*data->columns + x] & 0b00100000) {
+	if (data->intern_board[y*data->columns + x] & 0b00100000 || 
+	    data->intern_board[y*data->columns + x] & 0b01000000) {
 		//printf("posición limpia\n");
 		return 1;
 	}
