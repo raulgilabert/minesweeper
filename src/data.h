@@ -8,6 +8,7 @@ struct game_data {
 				 * m: mine; f: flag; c: clicked; d: flag doubt;
 				 * q: quantity of mines near */
 	u_int8_t rows, columns;
+	u_int8_t cursor_x, cursor_y;
 };
 
 struct q_data {

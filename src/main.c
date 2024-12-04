@@ -15,7 +15,6 @@
 int
 main(int argc, char *argv[])
 {
-	//print_explosion();
 	srand(time(NULL));
 
 	int rows = 12, columns = 35;
@@ -32,17 +31,7 @@ main(int argc, char *argv[])
         return 1;
     }
 
-	start_color();
-
-	// 1: game board no clicked
-	init_pair(1, COLOR_BLACK, COLOR_WHITE);
-	// 2: game board clicked and clear
-	init_pair(2, COLOR_WHITE, COLOR_BLACK);
-	// 3: game board clicked and flag
-	init_pair(3, COLOR_WHITE, COLOR_GREEN);
-	// 4: game board clicked and number
-	init_pair(4, COLOR_WHITE, COLOR_BLUE);
-
+	set_colors();
 
 	int x, y;
 	getmaxyx(stdscr, y, x);
@@ -52,17 +41,21 @@ main(int argc, char *argv[])
 
 	WINDOW *win = newwin(rows+2, columns, start_y, start_x);
 
-	wrefresh(win);
+    data.cursor_y = 0;
+    data.cursor_x = 0;
+    wmove(win, data.cursor_y + 1, data.cursor_x);
 
-	getyx(win, y, x);
+    print(&data, win);
+    wrefresh(win);
 
 	while (1)
 	{
-		print(&data, win);
-		wmove(win, y+2, x);
 
+		print(&data, win);
+
+		wmove(win, data.cursor_y+2, data.cursor_x);
 		wrefresh(win);
 
-		do_action(read_keyboard(), &x, &y, &data);
+		do_action(read_keyboard(), &data);
 	}
 }

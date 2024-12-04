@@ -6,6 +6,6 @@
 #include "data.h"
 
 enum action read_keyboard();
-void do_action(enum action key, int *x, int *y, struct game_data *data);
+void do_action(enum action key, struct game_data *data);
 
 #endif

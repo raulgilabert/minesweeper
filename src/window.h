@@ -6,6 +6,8 @@
 #include "game.h"
 #include "data.h"
 
+void set_colors();
+
 void print(struct game_data *data, WINDOW *win);
 
 #endif

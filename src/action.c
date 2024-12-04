@@ -33,8 +33,10 @@ enum action read_keyboard()
 }
 
 
-void do_action(enum action key, int *x, int *y, struct game_data *data)
+void do_action(enum action key, struct game_data *data)
 {
+    u_int8_t *x = &data->cursor_x;
+    u_int8_t *y = &data->cursor_y;
     switch (key) {
         case CLICK:
             {
@@ -53,22 +55,30 @@ void do_action(enum action key, int *x, int *y, struct game_data *data)
             break;
         case MV_UP:
             {
-                --(*y);
+                if (*y > 0) {
+                    --(*y);
+                }
             }
             break;
         case MV_DOWN:
             {
-                ++(*y);
+                if (*y < data->rows - 1) {
+                    ++(*y);
+                }
             }
             break;
         case MV_LEFT:
             {
-                --(*x);
+                if (*x > 0) {
+                    --(*x);
+                }
             }
             break;
         case MV_RIGHT:
             {
-                ++(*x);
+                if (*x < data->columns - 1) {
+                    ++(*x);
+                }
             }
             break;
         default:
